@@ -10,6 +10,8 @@ https://tv.cctv.com/lm/gzsbqlx/index.shtml
 
 坦白来说我是从来没有见过这么奇怪的需求, 怎么会有人把 CCTV 当成 CCAV 看。
 
+![screenshot](https://github.com/by-justin/cctvdownloader/blob/main/imgs/screenshot.png?raw=true)
+
 ## 怎么用
 
 用 Docker 部署。
