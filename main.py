@@ -5,6 +5,7 @@ import os
 import re
 import subprocess
 import time
+import traceback
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
@@ -91,9 +92,26 @@ def get_video_list(topc, limit=0):
 def check_resolution(link, yt_dlp_dir):
     download_command = ["python3", str(Path(yt_dlp_dir) / "__main__.py"), "-F", link]
 
-    result = subprocess.run(
-        download_command, check=True, capture_output=True, text=True
-    )
+    try:
+        logging.debug(" ".join(download_command))
+        result = subprocess.run(
+            download_command, check=True, capture_output=True, text=True
+        )
+        logging.debug(f"Command output: {result.stdout}")
+        logging.debug(f"Command error output: {result.stderr}")
+    except subprocess.CalledProcessError as e:
+        logging.error("Running command returned non-zero exit code.")
+        logging.debug(f"Command output: --- \n {e.stdout}")
+        logging.debug(f"Command error output: --- \n {e.stderr}")
+        if "403" in str(e.stderr):
+            logging.error("403 Detected, make sure that you proxy hls.cntv.cdn20.com.")
+            logging.error("Refer to https://github.com/yt-dlp/yt-dlp/issues/10082")
+        logging.debug(traceback.format_exc())
+        exit(1)
+    except Exception as e:
+        logging.error("An unexpected error occurred.")
+        logging.error(traceback.format_exc())
+        exit(1)
 
     res_tiers = []
     for i in range(100):
@@ -131,14 +149,14 @@ def do_video_exist(output_path_str, video_title):
 
 
 def download_video(
-    video_info, output_dir, index, total_videos, fragment_thread, yt_dlp_dir
+    video_info, output_dir, index, total_videos, fragment_thread, yt_dlp_dir, res
 ):
     link, title, date = video_info
     if do_video_exist(output_dir, title):
         logging.info(f"Video {title} exists, skipping.")
         return
 
-    res = check_resolution(link, yt_dlp_dir)[-1]
+    # res = check_resolution(link, yt_dlp_dir)[-1]
     output_path = output_path_f(output_dir, title, res, safe_title_f(date))
     download_command = [
         "python3",
@@ -215,6 +233,14 @@ def main():
         help="Directory of patched yt-dlp repo that contains __main__.py",
     )
     parser.add_argument(
+        "-r",
+        "--res",
+        choices=["hls-0", "hls-1", "hls-2", "hls-3"],
+        default="hls-3",
+        help="Specify the resolution. Available choices: hls-0(流畅), hls-1(标清), hls-2(高清), hls-3(超清).",
+    )
+
+    parser.add_argument(
         "--skip_check",
         type=bool,
         default=False,
@@ -234,6 +260,7 @@ def main():
     download_thread = args.download_thread
     fragment_thread = args.fragment_thread
     yt_dlp_dir = args.yt_dlp_dir
+    res = args.res
     skip_check = args.skip_check
     debug = args.debug
 
@@ -268,6 +295,7 @@ def main():
                 total_videos,
                 fragment_thread,
                 yt_dlp_dir,
+                res,
             ): video_info
             for index, video_info in enumerate(video_list)
         }
