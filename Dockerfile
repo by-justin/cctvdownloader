@@ -13,7 +13,6 @@ RUN \
   pip3 install -r /app/requirements.txt 
 
 COPY ./main.py /app
-COPY ./cctv.html /app
 COPY cctv_patched.py /app/yt_dlp/extractor/cctv.py
 
 CMD python3 /app/main.py
