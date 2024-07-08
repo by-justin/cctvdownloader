@@ -19,7 +19,7 @@ https://tv.cctv.com/lm/gzsbqlx/index.shtml
 ```
 git clone https://github.com/by-justin/cctvdownloader
 docker build -t cctvdownloader .
-docker run --rm -v ./data:/data cctvdownloader python3 /app/main.py --help
+docker run --rm -v ./data:/data cctvdownloader --help
 ```
 
 因为某些奇怪的原因, 国内访问会 403，要代理 `hls.cntv.cdn20.com`。在 clash 里面添加

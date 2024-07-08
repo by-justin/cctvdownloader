@@ -15,4 +15,5 @@ RUN \
 COPY ./main.py /app
 COPY cctv_patched.py /app/yt_dlp/extractor/cctv.py
 
-CMD python3 /app/main.py
+ENTRYPOINT ["python3","/app/main.py"]
+
