@@ -34,5 +34,5 @@ jobs:
         with:
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/my-image:latest
+            ghcr.io/${{ github.repository_owner }}/cctvdownloader:latest
           platforms: linux/386,linux/amd64,linux/arm/v5,linux/arm/v7,linux/arm64

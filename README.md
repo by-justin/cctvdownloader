@@ -16,10 +16,10 @@ https://tv.cctv.com/lm/gzsbqlx/index.shtml
 
 用 Docker 部署。
 
-```
-git clone https://github.com/by-justin/cctvdownloader
-docker build -t cctvdownloader .
-docker run --rm -v ./data:/data cctvdownloader --help
+```bash
+docker run --rm -v ./data:/data ghcr.io/by-justin/cctvdownloader --help
+# or use the following command to make it automatically restart on falilure
+# docker run --restart on-failure:99 -d  ./data:/data ghcr.io/by-justin/cctvdownloader
 ```
 
 因为某些奇怪的原因, 国内访问会 403，要代理 `hls.cntv.cdn20.com`。在 clash 里面添加
